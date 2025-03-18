@@ -1,3 +1,6 @@
+const tg = window.Telegram.WebApp;
+tg.expand();
+
 const board = document.getElementById('board');
 const scoreDisplay = document.getElementById('score');
 const colors = ['color-1', 'color-2', 'color-3', 'color-4'];
@@ -15,12 +18,22 @@ for (let i = 0; i < 36; i++) {
   const cell = document.createElement('div');
   cell.classList.add('cell', getRandomColor());
   cell.dataset.index = i;
-  cell.addEventListener('mousedown', handleMouseDown);
-  cell.addEventListener('mousemove', handleMouseMove);
-  cell.addEventListener('mouseup', handleMouseUp);
+  cell.addEventListener('click', () => handleTouchStart(cell)); // Используем click
   board.appendChild(cell);
   cells.push(cell);
 }
+
+// ... (остальные функции без изменений)
+
+function handleTouchStart(cell) { // Передаем cell как аргумент
+  selectedCell = cell;
+  initialCell = cell;
+  isDragging = true;
+  isSwapped = false;
+}
+
+// ... (остальные функции без изменений)
+
 
 // Получение случайного цвета
 function getRandomColor() {
