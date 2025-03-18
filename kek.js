@@ -1,6 +1,3 @@
-const tg = window.Telegram.WebApp;
-tg.expand();
-
 const board = document.getElementById('board');
 const scoreDisplay = document.getElementById('score');
 const colors = ['color-1', 'color-2', 'color-3', 'color-4'];
@@ -12,7 +9,10 @@ let initialCell = null;
 let lastTargetCell = null;
 let isSwapped = false;
 let score = 0;
-
+if (window.Telegram && window.Telegram.WebApp) {
+  const tg = window.Telegram.WebApp;
+  tg.expand();
+}
 // Создание игрового поля
 for (let i = 0; i < 36; i++) {
   const cell = document.createElement('div');
