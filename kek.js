@@ -27,6 +27,45 @@ function getRandomColor() {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
+// Обработчик касания (touchstart)
+function handleTouchStart(event) {
+  event.preventDefault(); // Предотвращаем стандартное поведение браузера
+  selectedCell = event.target;
+  initialCell = event.target;
+  isDragging = true;
+  isSwapped = false;
+}
+
+// Обработчик движения пальца (touchmove)
+function handleTouchMove(event) {
+  if (!isDragging || !selectedCell || isAnimating) return;
+  const touch = event.touches[0];
+  const target = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (!target || !target.classList.contains('cell')) return;
+  const targetCell = target;
+  if (targetCell !== selectedCell && targetCell.classList.contains('cell') && isNeighborInCross(initialCell, targetCell)) {
+    if (isCursorNearBorder(event, selectedCell, targetCell)) {
+      if (targetCell === initialCell && isSwapped) {
+        swapCellsWithAnimation(selectedCell, initialCell);
+        selectedCell = initialCell;
+        isSwapped = false;
+      } else if (targetCell !== initialCell && !isSwapped) {
+        swapCellsWithAnimation(selectedCell, targetCell);
+        selectedCell = targetCell;
+        lastTargetCell = targetCell;
+        isSwapped = true;
+      }
+    }
+  }
+}
+
+// Обработчик отпускания пальца (touchend)
+function handleTouchEnd() {
+  isDragging = false;
+  selectedCell = null;
+  initialCell = null;
+  lastTargetCell = null;
+}
 // Обработчик нажатия кнопки мыши
 function handleMouseDown(event) {
   selectedCell = event.target;
