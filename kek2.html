@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Три в ряд 6x6</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column; /* Изменяем направление flex-контейнера */
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    #score {
+      font-size: 24px;
+      margin-bottom: 20px; /* Добавляем отступ между счетом и полем */
+    }
+    #board {
+      display: grid;
+      grid-template-columns: repeat(6, 50px);
+      grid-gap: 5px;
+    }
+    .cell {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 50%;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+      opacity: 1;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .cell.new {
+      opacity: 0;
+    }
+    .color-1 { background: linear-gradient(to bottom right, #FF5733, #E64A19); }
+    .color-2 { background: linear-gradient(to bottom right, #33FF57, #22CC3F); }
+    .color-3 { background: linear-gradient(to bottom right, #5733FF, #4A22CC); }
+    .color-4 { background: linear-gradient(to bottom right, #FFD700, #E6C200); }
+  </style>
+</head>
+<body>
+  <div id="score">Счет: 0</div>
+  <div id="board"></div>
+  <script src="kek.js"></script>
+</body>
+</html>
