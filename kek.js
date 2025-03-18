@@ -20,7 +20,9 @@ if (window.Telegram && window.Telegram.WebApp) {
     const cell = document.createElement('div');
     cell.classList.add('cell', getRandomColor());
     cell.dataset.index = i;
-    cell.addEventListener('click', () => handleTouchStart(cell));
+    cell.addEventListener('touchstart', handleTouchStart);
+    cell.addEventListener('touchmove', handleTouchMove);
+    cell.addEventListener('touchend', handleTouchEnd);
     board.appendChild(cell);
     cells.push(cell);
   }
@@ -40,12 +42,44 @@ if (window.Telegram && window.Telegram.WebApp) {
 
 // ... (остальные функции без изменений)
 
-function handleTouchStart(cell) {
-  selectedCell = cell;
-  initialCell = cell;
+function handleTouchStart(event) {
+  event.preventDefault(); // Предотвращаем стандартное поведение браузера
+  selectedCell = event.target;
+  initialCell = event.target;
   isDragging = true;
   isSwapped = false;
 }
+
+function handleTouchMove(event) {
+  if (!isDragging || !selectedCell || isAnimating) return;
+  const touch = event.touches[0];
+  const target = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (!target || !target.classList.contains('cell')) return;
+  const targetCell = target;
+  if (targetCell !== selectedCell && targetCell.classList.contains('cell') && isNeighborInCross(initialCell, targetCell)) {
+    if (isCursorNearBorder(event, selectedCell, targetCell)) {
+      if (targetCell === initialCell && isSwapped) {
+        swapCellsWithAnimation(selectedCell, initialCell);
+        selectedCell = initialCell;
+        isSwapped = false;
+      } else if (targetCell !== initialCell && !isSwapped) {
+        swapCellsWithAnimation(selectedCell, targetCell);
+        selectedCell = targetCell;
+        lastTargetCell = targetCell;
+        isSwapped = true;
+      }
+    }
+  }
+}
+
+function handleTouchEnd() {
+  isDragging = false;
+  selectedCell = null;
+  initialCell = null;
+  lastTargetCell = null;
+}
+
+// ... (остальные функции без изменений)
 
 // ... (остальные функции без изменений)
 
