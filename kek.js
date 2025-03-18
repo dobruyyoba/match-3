@@ -9,23 +9,38 @@ let initialCell = null;
 let lastTargetCell = null;
 let isSwapped = false;
 let score = 0;
+
+// Проверяем, запущен ли код внутри Telegram Mini App
 if (window.Telegram && window.Telegram.WebApp) {
   const tg = window.Telegram.WebApp;
   tg.expand();
-}
-// Создание игрового поля
-for (let i = 0; i < 36; i++) {
-  const cell = document.createElement('div');
-  cell.classList.add('cell', getRandomColor());
-  cell.dataset.index = i;
-  cell.addEventListener('click', () => handleTouchStart(cell)); // Используем click
-  board.appendChild(cell);
-  cells.push(cell);
+
+  // Создание игрового поля (для Telegram Mini Apps)
+  for (let i = 0; i < 36; i++) {
+    const cell = document.createElement('div');
+    cell.classList.add('cell', getRandomColor());
+    cell.dataset.index = i;
+    cell.addEventListener('click', () => handleTouchStart(cell));
+    board.appendChild(cell);
+    cells.push(cell);
+  }
+} else {
+  // Создание игрового поля (для браузера)
+  for (let i = 0; i < 36; i++) {
+    const cell = document.createElement('div');
+    cell.classList.add('cell', getRandomColor());
+    cell.dataset.index = i;
+    cell.addEventListener('mousedown', handleMouseDown);
+    cell.addEventListener('mousemove', handleMouseMove);
+    cell.addEventListener('mouseup', handleMouseUp);
+    board.appendChild(cell);
+    cells.push(cell);
+  }
 }
 
 // ... (остальные функции без изменений)
 
-function handleTouchStart(cell) { // Передаем cell как аргумент
+function handleTouchStart(cell) {
   selectedCell = cell;
   initialCell = cell;
   isDragging = true;
