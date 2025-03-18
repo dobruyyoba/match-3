@@ -3,11 +3,7 @@ const scoreDisplay = document.getElementById('score');
 const colors = ['color-1', 'color-2', 'color-3', 'color-4'];
 let cells = [];
 let selectedCell = null;
-let isDragging = false;
 let isAnimating = false;
-let initialCell = null;
-let lastTargetCell = null;
-let isSwapped = false;
 let score = 0;
 
 // Проверяем, запущен ли код внутри Telegram Mini App
@@ -20,11 +16,12 @@ if (window.Telegram && window.Telegram.WebApp) {
     const cell = document.createElement('div');
     cell.classList.add('cell', getRandomColor());
     cell.dataset.index = i;
-    cell.addEventListener('touchstart', handleTouchStart);
-    cell.addEventListener('touchmove', handleTouchMove);
-    cell.addEventListener('touchend', handleTouchEnd);
     board.appendChild(cell);
     cells.push(cell);
+
+    const hammer = new Hammer(cell);
+    hammer.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+    hammer.on('swipe', handleSwipe);
   }
 } else {
   // Создание игрового поля (для браузера)
@@ -32,52 +29,48 @@ if (window.Telegram && window.Telegram.WebApp) {
     const cell = document.createElement('div');
     cell.classList.add('cell', getRandomColor());
     cell.dataset.index = i;
-    cell.addEventListener('mousedown', handleMouseDown);
-    cell.addEventListener('mousemove', handleMouseMove);
-    cell.addEventListener('mouseup', handleMouseUp);
-    board.appendChild(cell);
+    board.appendChild(cell); // Добавляем ячейку в элемент board
     cells.push(cell);
+
+    const hammer = new Hammer(cell);
+    hammer.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+    hammer.on('swipe', handleSwipe);
   }
 }
 
 // ... (остальные функции без изменений)
 
-function handleTouchStart(event) {
-  event.preventDefault(); // Предотвращаем стандартное поведение браузера
-  selectedCell = event.target;
-  initialCell = event.target;
-  isDragging = true;
-  isSwapped = false;
-}
+function handleSwipe(event) {
+  const cell1 = event.target;
+  const index1 = parseInt(cell1.dataset.index);
+  let cell2;
+  let index2;
 
-function handleTouchMove(event) {
-  if (!isDragging || !selectedCell || isAnimating) return;
-  const touch = event.touches[0];
-  const target = document.elementFromPoint(touch.clientX, touch.clientY);
-  if (!target || !target.classList.contains('cell')) return;
-  const targetCell = target;
-  if (targetCell !== selectedCell && targetCell.classList.contains('cell') && isNeighborInCross(initialCell, targetCell)) {
-    if (isCursorNearBorder(event, selectedCell, targetCell)) {
-      if (targetCell === initialCell && isSwapped) {
-        swapCellsWithAnimation(selectedCell, initialCell);
-        selectedCell = initialCell;
-        isSwapped = false;
-      } else if (targetCell !== initialCell && !isSwapped) {
-        swapCellsWithAnimation(selectedCell, targetCell);
-        selectedCell = targetCell;
-        lastTargetCell = targetCell;
-        isSwapped = true;
-      }
-    }
+  switch (event.direction) {
+    case Hammer.DIRECTION_LEFT:
+      index2 = index1 - 1;
+      break;
+    case Hammer.DIRECTION_RIGHT:
+      index2 = index1 + 1;
+      break;
+    case Hammer.DIRECTION_UP:
+      index2 = index1 - 6;
+      break;
+    case Hammer.DIRECTION_DOWN:
+      index2 = index1 + 6;
+      break;
+    default:
+      return;
+  }
+
+  cell2 = cells[index2];
+
+  if (cell2 && isNeighborInCross(cell1, cell2)) {
+    swapCellsWithAnimation(cell1, cell2);
   }
 }
 
-function handleTouchEnd() {
-  isDragging = false;
-  selectedCell = null;
-  initialCell = null;
-  lastTargetCell = null;
-}
+// ... (остальные функции без изменений)
 
 // ... (остальные функции без изменений)
 
